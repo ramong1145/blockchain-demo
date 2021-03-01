@@ -1,4 +1,6 @@
 import * as crypto from 'crypto';
+import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from 'node:constants';
+import { monitorEventLoopDelay } from 'perf_hooks';
 
 class Transaction {
   constructor(
@@ -14,6 +16,9 @@ class Transaction {
 }
 
 class Block {
+
+  public nonce = Math.round(Math.random() * 999999999);
+
   constructor(
     public prevHash: string,
     public transaction: Transaction,
@@ -40,6 +45,23 @@ class Chain {
 
   get lastBlock() {
     return this.chain[this.chain.length - 1];
+  }
+
+  mine(nonce: number) {
+    let solution = 1;
+    console.log(`⛏ mining ...`);
+
+    while(true) {
+      const hash = crypto.createHash('MD5');
+      hash.update((nonce + solution).toString()).end();
+
+      const attempt = hash.digest('hex');
+
+      if(attempt.substr(0,4) === '0000') {
+        console.log(`Solved: ${solution}`);
+        return solution;
+      }
+    }
   }
 
   addBlock(transaction: Transaction, senderPublicKey: string, signature: Buffer) {
