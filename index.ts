@@ -1,12 +1,10 @@
 import * as crypto from 'crypto';
-import { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } from 'node:constants';
-import { monitorEventLoopDelay } from 'perf_hooks';
 
 class Transaction {
   constructor(
     public amount: number, 
-    public payer: string, //public key
-    public payee: string //public key
+    public payer: string,
+    public payee: string 
   ) {}
 
   toString() {
@@ -61,6 +59,8 @@ class Chain {
         console.log(`Solved: ${solution}`);
         return solution;
       }
+
+      solution += 1;
     }
   }
 
